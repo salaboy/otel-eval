@@ -26,14 +26,14 @@ jobs:
 
       - name: Install kind
         run: |
-          curl -fsSL https://kind.sigs.k8s.io/dl/v0.24.0/kind-linux-amd64 -o /usr/local/bin/kind
-          chmod +x /usr/local/bin/kind
+          sudo curl -fsSL https://kind.sigs.k8s.io/dl/v0.24.0/kind-linux-amd64 -o /usr/local/bin/kind
+          sudo chmod +x /usr/local/bin/kind
           kind version
 
       - name: Install helm
         run: |
           curl -fsSL https://get.helm.sh/helm-v3.17.3-linux-amd64.tar.gz -o /tmp/helm.tar.gz
-          tar -xzf /tmp/helm.tar.gz --strip-components=1 -C /usr/local/bin linux-amd64/helm
+          sudo tar -xzf /tmp/helm.tar.gz --strip-components=1 -C /usr/local/bin linux-amd64/helm
           helm version
 
       - name: Set up OTel evaluation cluster
