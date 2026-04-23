@@ -35,9 +35,13 @@ jobs:
       - name: Start otel-score
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OTEL_EXPORTER_OTLP_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_ENDPOINT }}
+          OTEL_EXPORTER_OTLP_HEADERS_API_KEY: ${{ secrets.OTEL_EXPORTER_OTLP_HEADERS_API_KEY }}
         run: |
           docker run -d --name otel-score \
             -e ANTHROPIC_API_KEY="${ANTHROPIC_API_KEY}" \
+            -e OTEL_EXPORTER_OTLP_ENDPOINT="${OTEL_EXPORTER_OTLP_ENDPOINT}" \
+            -e OTEL_EXPORTER_OTLP_HEADERS_API_KEY="${OTEL_EXPORTER_OTLP_HEADERS_API_KEY}" \
             -v /var/run/docker.sock:/var/run/docker.sock \
             -v /tmp:/tmp \
             -p 8080:8080 \

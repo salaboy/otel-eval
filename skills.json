@@ -1,0 +1,24 @@
+{
+  "skills": [
+    {
+      "name": "install-cncf-project",
+      "source": "docker.io/salaboy/install-cncf-project",
+      "version": "0.0.1"
+    },
+    {
+      "name": "setup-otel-cluster",
+      "source": "docker.io/salaboy/setup-otel-cluster",
+      "version": "0.0.1"
+    },
+    {
+      "name": "evaluate-otel-maturity",
+      "source": "docker.io/salaboy/evaluate-otel-maturity",
+      "version": "0.0.1"
+    },
+    {
+      "name": "generate-otel-report",
+      "source": "docker.io/salaboy/generate-otel-report",
+      "version": "0.0.1"
+    }
+  ]
+}

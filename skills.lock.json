@@ -1,0 +1,54 @@
+{
+  "lockfileVersion": 1,
+  "generatedAt": "2026-04-17T18:13:39Z",
+  "skills": [
+    {
+      "name": "install-cncf-project",
+      "path": ".claude/skills/install-cncf-project",
+      "source": {
+        "registry": "docker.io",
+        "repository": "salaboy/install-cncf-project",
+        "tag": "0.0.1",
+        "digest": "sha256:c27c8d6abf3d3a738858a3602551af93e241be78a3bdecc253df3b25066578e3",
+        "ref": "docker.io/salaboy/install-cncf-project:0.0.1@sha256:c27c8d6abf3d3a738858a3602551af93e241be78a3bdecc253df3b25066578e3"
+      },
+      "installedAt": "2026-04-17T18:13:36Z"
+    },
+    {
+      "name": "setup-otel-cluster",
+      "path": ".claude/skills/setup-otel-cluster",
+      "source": {
+        "registry": "docker.io",
+        "repository": "salaboy/setup-otel-cluster",
+        "tag": "0.0.1",
+        "digest": "sha256:e71c2e43e3763fa7b841e70910cd8883fc884a79238c6fde54797de7678f7687",
+        "ref": "docker.io/salaboy/setup-otel-cluster:0.0.1@sha256:e71c2e43e3763fa7b841e70910cd8883fc884a79238c6fde54797de7678f7687"
+      },
+      "installedAt": "2026-04-17T18:13:37Z"
+    },
+    {
+      "name": "evaluate-otel-maturity",
+      "path": ".claude/skills/evaluate-otel-maturity",
+      "source": {
+        "registry": "docker.io",
+        "repository": "salaboy/evaluate-otel-maturity",
+        "tag": "0.0.1",
+        "digest": "sha256:be3e1a80d3cf4373ad741e677b72ee854c892ea980480eeab62cccc7439922dc",
+        "ref": "docker.io/salaboy/evaluate-otel-maturity:0.0.1@sha256:be3e1a80d3cf4373ad741e677b72ee854c892ea980480eeab62cccc7439922dc"
+      },
+      "installedAt": "2026-04-17T18:13:38Z"
+    },
+    {
+      "name": "generate-otel-report",
+      "path": ".claude/skills/generate-otel-report",
+      "source": {
+        "registry": "docker.io",
+        "repository": "salaboy/generate-otel-report",
+        "tag": "0.0.1",
+        "digest": "sha256:6e4b3ed2ec37d97f28f0a5dbe4dbab70d7df1faed4621a7ee36b9f33f521097b",
+        "ref": "docker.io/salaboy/generate-otel-report:0.0.1@sha256:6e4b3ed2ec37d97f28f0a5dbe4dbab70d7df1faed4621a7ee36b9f33f521097b"
+      },
+      "installedAt": "2026-04-17T18:13:39Z"
+    }
+  ]
+}
