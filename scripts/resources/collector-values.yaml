@@ -2,6 +2,7 @@ mode: deployment
 replicaCount: 1
 image:
   repository: otel/opentelemetry-collector-contrib
+  tag: "0.150.1"
 
 resources:
   limits:

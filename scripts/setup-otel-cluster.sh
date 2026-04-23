@@ -106,6 +106,16 @@ ok "Image loaded into kind cluster"
 
 # ── Step 8: Install the OpenTelemetry Collector ───────────────────────────────
 
+COLLECTOR_IMAGE="otel/opentelemetry-collector-contrib:0.150.1"
+
+log "Pre-pulling OTel Collector image on host Docker..."
+docker pull "$COLLECTOR_IMAGE"
+ok "Image pulled: $COLLECTOR_IMAGE"
+
+log "Loading collector image into kind cluster..."
+kind load docker-image "$COLLECTOR_IMAGE" --name "$CLUSTER_NAME"
+ok "Image loaded into kind cluster"
+
 log "Adding OpenTelemetry Helm repo..."
 helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts --force-update
 helm repo update
@@ -115,12 +125,12 @@ kubectl create namespace opentelemetry \
     --context "kind-$CLUSTER_NAME" \
     --dry-run=client -o yaml | kubectl apply --context "kind-$CLUSTER_NAME" -f -
 
-log "Installing OTel Collector (this may take a few minutes)..."
+log "Installing OTel Collector..."
 helm upgrade --install otel-collector open-telemetry/opentelemetry-collector \
     --kube-context "kind-$CLUSTER_NAME" \
     --namespace opentelemetry \
     -f "$WORK_DIR/collector/values.yaml" \
-    --wait --timeout 10m
+    --wait --timeout 5m
 ok "OTel Collector installed"
 
 # ── Step 9: Deploy the test backend ──────────────────────────────────────────
