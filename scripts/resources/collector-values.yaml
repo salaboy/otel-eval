@@ -13,10 +13,15 @@ resources:
 presets:
   clusterMetrics:
     enabled: true
+  # logsCollection is disabled — it injects a filelog receiver with hostPath
+  # mounts (/var/lib/docker/containers) that don't exist in kind (containerd).
+  # Logs are collected via OTLP push instead.
   logsCollection:
-    enabled: true
+    enabled: false
+  # kubeletMetrics is disabled — the kubeletstats receiver needs DaemonSet mode
+  # and kubelet auth that's unreliable in a minimal kind cluster.
   kubeletMetrics:
-    enabled: true
+    enabled: false
   kubernetesAttributes:
     enabled: true
     extractAllPodLabels: true

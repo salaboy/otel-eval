@@ -127,12 +127,40 @@ kubectl create namespace opentelemetry \
     --context "kind-$CLUSTER_NAME" \
     --dry-run=client -o yaml | kubectl apply --context "kind-$CLUSTER_NAME" -f -
 
+log "Verifying collector image is available in kind node..."
+docker exec "${CLUSTER_NAME}-control-plane" crictl images 2>/dev/null | grep opentelemetry || \
+    echo "  WARNING: collector image not found in node — Helm will pull it (slow)"
+
 log "Installing OTel Collector..."
-helm upgrade --install otel-collector open-telemetry/opentelemetry-collector \
+if ! helm upgrade --install otel-collector open-telemetry/opentelemetry-collector \
     --kube-context "kind-$CLUSTER_NAME" \
     --namespace opentelemetry \
     -f "$WORK_DIR/collector/values.yaml" \
-    --wait --timeout 5m
+    --wait --timeout 5m 2>&1; then
+
+    echo ""
+    echo "── Helm install failed — collecting diagnostics ──────────────"
+    echo ""
+    echo "── Pod status:"
+    kubectl get pods -n opentelemetry --context "kind-$CLUSTER_NAME" -o wide 2>/dev/null || true
+    echo ""
+    echo "── Pod describe (first collector pod):"
+    POD=$(kubectl get pods -n opentelemetry --context "kind-$CLUSTER_NAME" -o name 2>/dev/null | head -1)
+    if [[ -n "$POD" ]]; then
+        kubectl describe "$POD" -n opentelemetry --context "kind-$CLUSTER_NAME" 2>/dev/null || true
+        echo ""
+        echo "── Pod logs:"
+        kubectl logs "$POD" -n opentelemetry --context "kind-$CLUSTER_NAME" --tail=50 2>/dev/null || true
+    fi
+    echo ""
+    echo "── Events in opentelemetry namespace:"
+    kubectl get events -n opentelemetry --context "kind-$CLUSTER_NAME" --sort-by='.lastTimestamp' 2>/dev/null | tail -20 || true
+    echo ""
+    echo "── Images available in kind node:"
+    docker exec "${CLUSTER_NAME}-control-plane" crictl images 2>/dev/null || true
+    echo "───────────────────────────────────────────────────────────────"
+    exit 1
+fi
 ok "OTel Collector installed"
 
 # ── Step 9: Deploy the test backend ──────────────────────────────────────────
