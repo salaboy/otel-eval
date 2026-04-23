@@ -3,6 +3,7 @@ package com.salaboy.otelscore.traces;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.context.Context;
 import jakarta.annotation.PostConstruct;
+import org.springframework.boot.restclient.RestClientCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.support.ContextPropagatingTaskDecorator;
