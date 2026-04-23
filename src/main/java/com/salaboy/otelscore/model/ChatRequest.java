@@ -1,4 +1,3 @@
 package com.salaboy.otelscore.model;
 
-public record ChatRequest(String message) {
-}
+public record ChatRequest(String conversationId, String message) {}

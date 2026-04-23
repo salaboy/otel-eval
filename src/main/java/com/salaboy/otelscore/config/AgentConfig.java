@@ -21,6 +21,9 @@ public class AgentConfig {
                         instrumentation across traces, metrics, and logs.
                         Use the available tools and skills to evaluate projects and provide
                         detailed scoring with actionable recommendations.
+                        
+                        When using a skill or a tool always notify the user about the action but sending 
+                        regular messages with the progress of the evaluation. 
                         """)
                 .defaultToolCallbacks(SkillsTool.builder()
                         .addSkillsResource(resourceLoader.getResource("classpath:.claude/skills"))
