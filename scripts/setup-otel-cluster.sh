@@ -76,6 +76,7 @@ ok "Node.js backend copied to $WORK_DIR/services/nodejs-app/"
 
 log "Creating host telemetry output directory at $HOST_TELEMETRY_DIR ..."
 mkdir -p "$HOST_TELEMETRY_DIR"
+chmod 777 "$HOST_TELEMETRY_DIR"
 ok "Telemetry output directory created"
 
 # ── Step 6: Create kind cluster ───────────────────────────────────────────────
