@@ -1,0 +1,17 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: hello-task
+  namespace: default
+spec:
+  params:
+  - name: message
+    type: string
+    default: "Hello from Tekton!"
+  steps:
+  - name: echo
+    image: alpine:3.19
+    script: |
+      #!/bin/sh
+      echo "$(params.message)"
+      echo "Step completed successfully"

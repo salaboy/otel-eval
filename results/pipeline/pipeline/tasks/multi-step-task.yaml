@@ -1,0 +1,32 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: multi-step-task
+  namespace: default
+spec:
+  params:
+  - name: name
+    type: string
+    default: "World"
+  results:
+  - name: greeting
+    description: The greeting message
+  steps:
+  - name: prepare
+    image: alpine:3.19
+    script: |
+      #!/bin/sh
+      echo "Preparing for $(params.name)..."
+      sleep 1
+  - name: greet
+    image: alpine:3.19
+    script: |
+      #!/bin/sh
+      MSG="Hello, $(params.name)!"
+      echo "$MSG"
+      echo -n "$MSG" > $(results.greeting.path)
+  - name: cleanup
+    image: alpine:3.19
+    script: |
+      #!/bin/sh
+      echo "Cleanup complete"

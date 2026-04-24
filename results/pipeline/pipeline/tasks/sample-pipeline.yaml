@@ -1,0 +1,33 @@
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: sample-pipeline
+  namespace: default
+spec:
+  params:
+  - name: name
+    type: string
+    default: "Tekton"
+  tasks:
+  - name: task-one
+    taskRef:
+      name: hello-task
+    params:
+    - name: message
+      value: "Starting pipeline for $(params.name)"
+  - name: task-two
+    taskRef:
+      name: multi-step-task
+    params:
+    - name: name
+      value: "$(params.name)"
+    runAfter:
+    - task-one
+  - name: task-three
+    taskRef:
+      name: hello-task
+    params:
+    - name: message
+      value: "Pipeline complete! Result: $(tasks.task-two.results.greeting)"
+    runAfter:
+    - task-two
