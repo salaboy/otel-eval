@@ -12,10 +12,10 @@
     </parent>
 
     <groupId>com.salaboy</groupId>
-    <artifactId>otel-score</artifactId>
+    <artifactId>otel-eval</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>otel-score</name>
-    <description>Automating OpenTelemetry project evaluation scores</description>
+    <name>otel-eval</name>
+    <description>Automating OpenTelemetry maturity project evaluation</description>
 
     <properties>
         <java.version>21</java.version>

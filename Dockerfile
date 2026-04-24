@@ -61,7 +61,7 @@ RUN install -m 0755 -d /etc/apt/keyrings \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
-COPY --from=builder /app/target/otel-score-*.jar app.jar
+COPY --from=builder /app/target/otel-eval-*.jar app.jar
 
 EXPOSE 8080
 
