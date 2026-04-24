@@ -57,7 +57,7 @@ Renders a self-contained `report.html` with an interactive Chart.js radar chart,
 
 ## GitHub Actions Usage
 
-> The container image is published to `ghcr.io/salaboy/otel-score` via the `publish.yml` workflow on every push to `main` and on version tags.
+> The container image is published to `ghcr.io/salaboy/otel-eval` via the `publish.yml` workflow on every push to `main` and on version tags.
 
 ### Workflow inputs
 
@@ -102,7 +102,7 @@ jobs:
           docker run -d --name otel-score \
             -e ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY \
             -p 8080:8080 \
-            ghcr.io/salaboy/otel-score:latest
+            ghcr.io/salaboy/otel-eval:latest
 
           # Wait for the service to be ready
           until curl -sf http://localhost:8080/actuator/health; do sleep 2; done

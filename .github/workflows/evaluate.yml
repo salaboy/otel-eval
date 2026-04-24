@@ -103,10 +103,17 @@ jobs:
       - name: Copy evaluation artifacts from container
         if: always()
         run: |
+          echo "── Locating evaluation files inside container:"
+          docker exec otel-score find /app/.otel-eval -type f 2>/dev/null || echo "  (no files at /app/.otel-eval)"
+
+          # docker cp copies a dir INTO an existing target, creating a nested
+          # subdirectory. Remove the host copy first so docker cp creates it fresh.
+          rm -rf ".otel-eval/${{ env.PROJECT_NAME }}"
           docker cp "otel-score:/app/.otel-eval/${{ env.PROJECT_NAME }}" \
-                    ".otel-eval/${{ env.PROJECT_NAME }}" 2>/dev/null || \
-            echo "WARNING: could not copy .otel-eval from container"
-          echo "── Files extracted from container:"
+                    ".otel-eval/${{ env.PROJECT_NAME }}" || \
+            echo "WARNING: docker cp failed — files may be at a different path"
+
+          echo "── Files on host after extraction:"
           find ".otel-eval/${{ env.PROJECT_NAME }}" -type f 2>/dev/null || echo "  (none)"
 
       # ── Artifacts ────────────────────────────────────────────────────────
@@ -129,30 +136,20 @@ jobs:
         run: |
           SRC=".otel-eval/${{ env.PROJECT_NAME }}"
           DST="results/${{ env.PROJECT_NAME }}"
-          mkdir -p "$DST"
 
-          FILES_FOUND=0
-          for file in report.html EVALUATION.md RESEARCH.md INSTALL-PLAN.md; do
-            if [[ -f "$SRC/$file" ]]; then
-              cp "$SRC/$file" "$DST/$file"
-              echo "  ✓ $file"
-              FILES_FOUND=$((FILES_FOUND + 1))
-            else
-              echo "  ✗ $file (not generated)"
-            fi
-          done
-
-          if [[ $FILES_FOUND -eq 0 ]]; then
-            echo "ERROR: no evaluation files were generated"
+          if [[ ! -d "$SRC" ]] || [[ -z "$(ls -A "$SRC" 2>/dev/null)" ]]; then
+            echo "ERROR: no evaluation files were generated at $SRC"
             echo "── Container logs (last 50 lines):"
             docker logs otel-score --tail=50 2>/dev/null || true
             exit 1
           fi
 
-          echo ""
-          echo "── $FILES_FOUND file(s) will be included in the pull request:"
-          ls -lh "$DST"
-          echo "files_found=$FILES_FOUND" >> "$GITHUB_OUTPUT"
+          mkdir -p "$DST"
+          cp -r "$SRC"/. "$DST"/
+
+          echo "── Files included in the pull request:"
+          find "$DST" -type f -exec ls -lh {} \;
+          echo "files_found=1" >> "$GITHUB_OUTPUT"
 
       - name: Create pull request with results
         uses: peter-evans/create-pull-request@v7
@@ -165,13 +162,7 @@ jobs:
           body: |
             Automated OTel maturity evaluation for [${{ env.PROJECT_NAME }}](${{ github.event.inputs.project_url }}).
 
-            ## Included files
-            - `report.html` — interactive radar chart report
-            - `EVALUATION.md` — detailed per-dimension assessment with evidence
-            - `RESEARCH.md` — research notes from project installation
-            - `INSTALL-PLAN.md` — installation plan and configuration
-
-            > Only files that were successfully generated are included.
+            All files from the `.otel-eval/${{ env.PROJECT_NAME }}/` evaluation directory are included.
 
             Triggered by @${{ github.actor }} via workflow dispatch.
           add-paths: results/${{ env.PROJECT_NAME }}/*
@@ -186,10 +177,9 @@ jobs:
           # Re-collect (the failed action may have left the worktree dirty)
           SRC=".otel-eval/${{ env.PROJECT_NAME }}"
           DST="results/${{ env.PROJECT_NAME }}"
+          rm -rf "$DST"
           mkdir -p "$DST"
-          for file in report.html EVALUATION.md RESEARCH.md INSTALL-PLAN.md; do
-            [[ -f "$SRC/$file" ]] && cp "$SRC/$file" "$DST/$file"
-          done
+          cp -r "$SRC"/. "$DST"/
 
           git add "results/${{ env.PROJECT_NAME }}/"
           git -c user.name="github-actions[bot]" \
