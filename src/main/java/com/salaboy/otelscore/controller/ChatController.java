@@ -38,13 +38,14 @@ public class ChatController {
                 .append(request.projectName())
                 .append(" (").append(request.projectUrl()).append(").\n");
 
-        if (request.projectDir() != null && !request.projectDir().isBlank()) {
-            userPrompt.append("A previous installation run exists at: ")
-                    .append(request.projectDir())
-                    .append(". Review the installation steps in ")
-                    .append(request.projectDir())
-                    .append("/INSTALL-PLAN.md before proceeding.\n");
-        }
+
+        userPrompt.append("Check if a previous installation run exists at: ")
+                .append("results/").append(request.projectName())
+                .append(". Review the installation steps in ")
+                .append("results/")
+                .append(request.projectName())
+                .append("/INSTALL-PLAN.md before proceeding.\n");
+
 
         userPrompt.append(request.message());
 
