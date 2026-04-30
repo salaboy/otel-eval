@@ -1,0 +1,59 @@
+---
+# Simple Task: echo hello
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: echo-hello
+  namespace: default
+spec:
+  steps:
+  - name: echo
+    image: alpine:3.19
+    script: |
+      #!/bin/sh
+      echo "Hello from Tekton!"
+      echo "Current date: $(date)"
+      sleep 2
+---
+# Task with params
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: greet
+  namespace: default
+spec:
+  params:
+  - name: name
+    type: string
+    default: "World"
+  steps:
+  - name: greet
+    image: alpine:3.19
+    script: |
+      #!/bin/sh
+      echo "Hello, $(params.name)!"
+      sleep 1
+---
+# Pipeline with multiple tasks
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: hello-pipeline
+  namespace: default
+spec:
+  params:
+  - name: greeting-name
+    type: string
+    default: "Tekton"
+  tasks:
+  - name: say-hello
+    taskRef:
+      name: echo-hello
+  - name: say-greeting
+    taskRef:
+      name: greet
+    params:
+    - name: name
+      value: $(params.greeting-name)
+    runAfter:
+    - say-hello
