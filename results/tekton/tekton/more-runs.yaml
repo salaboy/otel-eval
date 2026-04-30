@@ -1,0 +1,73 @@
+---
+# Additional TaskRuns to generate more metrics
+apiVersion: tekton.dev/v1
+kind: TaskRun
+metadata:
+  name: taskrun-4
+  namespace: default
+spec:
+  taskRef:
+    name: echo-task
+  params:
+  - name: message
+    value: "TaskRun 4 - Additional metrics generation"
+---
+apiVersion: tekton.dev/v1
+kind: TaskRun
+metadata:
+  name: taskrun-5
+  namespace: default
+spec:
+  taskRef:
+    name: multi-step-task
+  params:
+  - name: name
+    value: "Run 5"
+---
+apiVersion: tekton.dev/v1
+kind: TaskRun
+metadata:
+  name: taskrun-6
+  namespace: default
+spec:
+  taskRef:
+    name: echo-task
+  params:
+  - name: message
+    value: "TaskRun 6 - Metrics test"
+---
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  name: pipelinerun-3
+  namespace: default
+spec:
+  pipelineRef:
+    name: simple-pipeline
+  params:
+  - name: greeting
+    value: "PipelineRun 3 - Third run"
+---
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  name: pipelinerun-4
+  namespace: default
+spec:
+  pipelineRef:
+    name: simple-pipeline
+  params:
+  - name: greeting
+    value: "PipelineRun 4 - Fourth run"
+---
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  name: pipelinerun-5
+  namespace: default
+spec:
+  pipelineRef:
+    name: simple-pipeline
+  params:
+  - name: greeting
+    value: "PipelineRun 5 - Fifth run"

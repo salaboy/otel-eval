@@ -1,0 +1,142 @@
+---
+# Simple echo task
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: echo-task
+  namespace: default
+spec:
+  params:
+  - name: message
+    type: string
+    default: "Hello from Tekton!"
+  steps:
+  - name: echo
+    image: alpine:3.18
+    command:
+    - sh
+    - -c
+    - echo "$(params.message)"
+---
+# Task with multiple steps
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: multi-step-task
+  namespace: default
+spec:
+  params:
+  - name: name
+    type: string
+    default: "World"
+  steps:
+  - name: greet
+    image: alpine:3.18
+    command:
+    - sh
+    - -c
+    - echo "Hello $(params.name)!"
+  - name: timestamp
+    image: alpine:3.18
+    command:
+    - sh
+    - -c
+    - date
+  - name: info
+    image: alpine:3.18
+    command:
+    - sh
+    - -c
+    - uname -a
+---
+# A simple pipeline
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: simple-pipeline
+  namespace: default
+spec:
+  params:
+  - name: greeting
+    type: string
+    default: "Pipeline run!"
+  tasks:
+  - name: first-task
+    taskRef:
+      name: echo-task
+    params:
+    - name: message
+      value: "$(params.greeting) - Step 1"
+  - name: second-task
+    taskRef:
+      name: multi-step-task
+    runAfter:
+    - first-task
+    params:
+    - name: name
+      value: "Tekton Pipeline"
+---
+# TaskRun 1
+apiVersion: tekton.dev/v1
+kind: TaskRun
+metadata:
+  name: taskrun-1
+  namespace: default
+spec:
+  taskRef:
+    name: echo-task
+  params:
+  - name: message
+    value: "TaskRun 1 - Hello from OTel evaluation!"
+---
+# TaskRun 2
+apiVersion: tekton.dev/v1
+kind: TaskRun
+metadata:
+  name: taskrun-2
+  namespace: default
+spec:
+  taskRef:
+    name: echo-task
+  params:
+  - name: message
+    value: "TaskRun 2 - Testing Tekton metrics"
+---
+# TaskRun 3
+apiVersion: tekton.dev/v1
+kind: TaskRun
+metadata:
+  name: taskrun-3
+  namespace: default
+spec:
+  taskRef:
+    name: multi-step-task
+  params:
+  - name: name
+    value: "OTel Evaluator"
+---
+# PipelineRun 1
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  name: pipelinerun-1
+  namespace: default
+spec:
+  pipelineRef:
+    name: simple-pipeline
+  params:
+  - name: greeting
+    value: "PipelineRun 1 - OTel evaluation run"
+---
+# PipelineRun 2
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  name: pipelinerun-2
+  namespace: default
+spec:
+  pipelineRef:
+    name: simple-pipeline
+  params:
+  - name: greeting
+    value: "PipelineRun 2 - Second run for metrics"

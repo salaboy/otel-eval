@@ -1,0 +1,24 @@
+---
+apiVersion: tekton.dev/v1
+kind: TaskRun
+metadata:
+  name: taskrun-otlp-3
+  namespace: default
+spec:
+  taskRef:
+    name: echo-task
+  params:
+  - name: message
+    value: "OTLP metrics test 3 - insecure endpoint"
+---
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  name: pipelinerun-otlp-2
+  namespace: default
+spec:
+  pipelineRef:
+    name: simple-pipeline
+  params:
+  - name: greeting
+    value: "OTLP metrics pipeline run 2"
