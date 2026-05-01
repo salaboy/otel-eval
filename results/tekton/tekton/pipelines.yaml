@@ -1,0 +1,26 @@
+---
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: hello-pipeline
+  namespace: default
+spec:
+  params:
+  - name: greeting
+    type: string
+    default: "Hello from Pipeline"
+  tasks:
+  - name: greet
+    taskRef:
+      name: hello-task
+    params:
+    - name: message
+      value: "$(params.greeting)"
+  - name: compute
+    taskRef:
+      name: compute-task
+    params:
+    - name: iterations
+      value: "5"
+    runAfter:
+    - greet

@@ -1,0 +1,55 @@
+---
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: hello-task
+  namespace: default
+spec:
+  params:
+  - name: message
+    type: string
+    default: "Hello, Tekton!"
+  steps:
+  - name: say-hello
+    image: alpine:3.18
+    script: |
+      #!/bin/sh
+      echo "$(params.message)"
+      sleep 2
+      echo "Done!"
+---
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: compute-task
+  namespace: default
+spec:
+  params:
+  - name: iterations
+    type: string
+    default: "10"
+  steps:
+  - name: compute
+    image: alpine:3.18
+    script: |
+      #!/bin/sh
+      echo "Running compute task with $(params.iterations) iterations"
+      for i in $(seq 1 $(params.iterations)); do
+        echo "Iteration $i"
+        sleep 0.5
+      done
+      echo "Compute complete"
+---
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: fail-task
+  namespace: default
+spec:
+  steps:
+  - name: fail
+    image: alpine:3.18
+    script: |
+      #!/bin/sh
+      echo "This task will fail"
+      exit 1
