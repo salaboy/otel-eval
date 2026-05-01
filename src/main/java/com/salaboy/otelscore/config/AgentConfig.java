@@ -35,8 +35,10 @@ public class AgentConfig {
                         When using a skill or a tool always notify the user about the action but sending
                         regular messages with the progress of the evaluation.
 
-                        The evaluation must finish with the generated report.html file and a message
-                        to the user about the steps that were taken to complete the evaluation.
+                        The evaluation must finish with the generated report.html file.
+                        
+                        When the evaluation is finished, a message to the user about the steps that were taken to perform 
+                        the evaluation must be sent as the last message to the user. Use ++++ as a separator.
                         """)
                 .defaultToolCallbacks(SkillsTool.builder()
                         .addSkillsResource(resourceLoader.getResource("classpath:.claude/skills"))

@@ -205,6 +205,19 @@ jobs:
             } >> evaluation-errors.txt
           fi
 
+      - name: Extract evaluation summary
+        if: always()
+        run: |
+          if [[ -f evaluation-response.txt ]] && grep -q '++++' evaluation-response.txt; then
+            # Extract everything after the last ++++ separator
+            sed -n '/++++/,$ p' evaluation-response.txt | tail -n +2 > evaluation-summary.txt
+            # Trim leading/trailing blank lines
+            sed -i '/./,$!d' evaluation-summary.txt
+            echo "── Evaluation summary extracted ($(wc -l < evaluation-summary.txt) lines)"
+          else
+            echo "── No ++++ separator found in evaluation response"
+          fi
+
       - name: Create pull request with results
         id: create-pr
         if: always() && steps.collect.outputs.files_found == '1'
@@ -214,7 +227,7 @@ jobs:
           branch: results/${{ github.event.inputs.project_name }}
           base: main
           commit-message: "results: add OTel maturity evaluation for ${{ github.event.inputs.project_name }}"
-          title: "OTel maturity report: ${{ github.event.inputs.project_name }}${{ steps.collect.outputs.report_generated == '1' && '' || ' (incomplete)' }}"
+          title: "OTel maturity report: ${{ github.event.inputs.project_name }}${{ steps.collect.outputs.report_generated != '1' && ' (incomplete)' || '' }}"
           body: |
             Automated OTel maturity evaluation for [${{ github.event.inputs.project_name }}](${{ github.event.inputs.project_url }}).
 
@@ -225,14 +238,31 @@ jobs:
             Triggered by @${{ github.actor }} via workflow dispatch.
           add-paths: results/${{ github.event.inputs.project_name }}/*
 
-      - name: Comment on PR with errors
-        if: always() && steps.create-pr.outputs.pull-request-number && hashFiles('evaluation-errors.txt') != ''
+      - name: Comment on PR
+        if: always() && steps.create-pr.outputs.pull-request-number
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           PR_NUMBER="${{ steps.create-pr.outputs.pull-request-number }}"
-          echo "Adding error details to PR #${PR_NUMBER}"
-          gh pr comment "$PR_NUMBER" --body "$(cat evaluation-errors.txt)"
+          COMMENT=""
+
+          # Add evaluation summary if available
+          if [[ -s evaluation-summary.txt ]]; then
+            COMMENT="## Evaluation Summary"$'\n\n'
+            COMMENT+="$(cat evaluation-summary.txt)"$'\n\n'
+          fi
+
+          # Add errors if any
+          if [[ -s evaluation-errors.txt ]]; then
+            COMMENT+="$(cat evaluation-errors.txt)"$'\n'
+          fi
+
+          if [[ -n "$COMMENT" ]]; then
+            echo "Adding comment to PR #${PR_NUMBER}"
+            gh pr comment "$PR_NUMBER" --body "$COMMENT"
+          else
+            echo "No summary or errors to post"
+          fi
 
       - name: Retry PR on transient failure
         if: failure() && steps.collect.outputs.files_found == '1'
